@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_blue_plus_example/screens/tp_scaen_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'screens/bluetooth_off_screen.dart';
@@ -30,7 +31,7 @@ class FlutterBlueApp extends ConsumerWidget {
 
   Widget returnScreen(BluetoothAdapterState adapterState) {
     return adapterState == BluetoothAdapterState.on
-        ? const ScanScreen()
+        ? const ScanScreenRiverpod()
         : BluetoothOffScreen(adapterState: adapterState);
   }
 }

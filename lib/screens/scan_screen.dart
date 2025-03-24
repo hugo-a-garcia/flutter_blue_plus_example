@@ -27,14 +27,17 @@ class _ScanScreenState extends State<ScanScreen> {
   void initState() {
     super.initState();
 
-    _scanResultsSubscription = FlutterBluePlus.scanResults.listen((results) {
-      _scanResults = results;
-      if (mounted) {
-        setState(() {});
-      }
-    }, onError: (e) {
-      Snackbar.show(ABC.b, prettyException("Scan Error:", e), success: false);
-    });
+    _scanResultsSubscription = FlutterBluePlus.scanResults.listen(
+      (results) {
+        _scanResults = results;
+        if (mounted) {
+          setState(() {});
+        }
+      },
+      onError: (e) {
+        Snackbar.show(ABC.b, prettyException("Scan Error:", e), success: false);
+      },
+    );
 
     _isScanningSubscription = FlutterBluePlus.isScanning.listen((state) {
       _isScanning = state;
@@ -57,21 +60,30 @@ class _ScanScreenState extends State<ScanScreen> {
       var withServices = [Guid("180f")]; // Battery Level Service
       _systemDevices = await FlutterBluePlus.systemDevices(withServices);
     } catch (e, backtrace) {
-      Snackbar.show(ABC.b, prettyException("System Devices Error:", e), success: false);
+      Snackbar.show(
+        ABC.b,
+        prettyException("System Devices Error:", e),
+        success: false,
+      );
       print(e);
       print("backtrace: $backtrace");
     }
     try {
       await FlutterBluePlus.startScan(
         timeout: const Duration(seconds: 15),
-        webOptionalServices: [
-          Guid("180f"), // battery
-          Guid("1800"), // generic access
-          Guid("6e400001-b5a3-f393-e0a9-e50e24dcca9e"), // Nordic UART
-        ],
+        // webOptionalServices: [
+        //   Guid("180a"),
+        //   // Guid("180f"), // battery
+        //   // Guid("1800"), // generic access
+        //   // Guid("6e400001-b5a3-f393-e0a9-e50e24dcca9e"), // Nordic UART
+        // ],
       );
     } catch (e, backtrace) {
-      Snackbar.show(ABC.b, prettyException("Start Scan Error:", e), success: false);
+      Snackbar.show(
+        ABC.b,
+        prettyException("Start Scan Error:", e),
+        success: false,
+      );
       print(e);
       print("backtrace: $backtrace");
     }
@@ -84,7 +96,11 @@ class _ScanScreenState extends State<ScanScreen> {
     try {
       FlutterBluePlus.stopScan();
     } catch (e, backtrace) {
-      Snackbar.show(ABC.b, prettyException("Stop Scan Error:", e), success: false);
+      Snackbar.show(
+        ABC.b,
+        prettyException("Stop Scan Error:", e),
+        success: false,
+      );
       print(e);
       print("backtrace: $backtrace");
     }
@@ -92,10 +108,16 @@ class _ScanScreenState extends State<ScanScreen> {
 
   void onConnectPressed(BluetoothDevice device) {
     device.connectAndUpdateStream().catchError((e) {
-      Snackbar.show(ABC.c, prettyException("Connect Error:", e), success: false);
+      Snackbar.show(
+        ABC.c,
+        prettyException("Connect Error:", e),
+        success: false,
+      );
     });
     MaterialPageRoute route = MaterialPageRoute(
-        builder: (context) => DeviceScreen(device: device), settings: RouteSettings(name: '/DeviceScreen'));
+      builder: (context) => DeviceScreen(device: device),
+      settings: RouteSettings(name: '/DeviceScreen'),
+    );
     Navigator.of(context).push(route);
   }
 
@@ -112,12 +134,15 @@ class _ScanScreenState extends State<ScanScreen> {
   Widget buildScanButton(BuildContext context) {
     if (FlutterBluePlus.isScanningNow) {
       return FloatingActionButton(
-        child: const Icon(Icons.stop),
         onPressed: onStopPressed,
         backgroundColor: Colors.red,
+        child: const Icon(Icons.stop),
       );
     } else {
-      return FloatingActionButton(child: const Text("SCAN"), onPressed: onScanPressed);
+      return FloatingActionButton(
+        onPressed: onScanPressed,
+        child: const Text("SCAN"),
+      );
     }
   }
 
@@ -126,12 +151,13 @@ class _ScanScreenState extends State<ScanScreen> {
         .map(
           (d) => SystemDeviceTile(
             device: d,
-            onOpen: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => DeviceScreen(device: d),
-                settings: RouteSettings(name: '/DeviceScreen'),
-              ),
-            ),
+            onOpen:
+                () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => DeviceScreen(device: d),
+                    settings: RouteSettings(name: '/DeviceScreen'),
+                  ),
+                ),
             onConnect: () => onConnectPressed(d),
           ),
         )
@@ -154,9 +180,7 @@ class _ScanScreenState extends State<ScanScreen> {
     return ScaffoldMessenger(
       key: Snackbar.snackBarKeyB,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Find Devices'),
-        ),
+        appBar: AppBar(title: const Text('Find Devices')),
         body: RefreshIndicator(
           onRefresh: onRefresh,
           child: ListView(
